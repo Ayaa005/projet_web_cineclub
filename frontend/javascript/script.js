@@ -43,3 +43,27 @@ function selectMovie(m){
     }
 }
 document.addEventListener('click',e=>{if(!e.target.closest('#tmdb-q')&&!e.target.closest('#tmdb-drop'))document.getElementById('tmdb-drop').style.display='none';});
+
+function suggestEmoji(t) {
+    const low = t.toLowerCase().trim();
+    const box = document.getElementById('e-sug');
+    if (!low) { box.classList.remove('show'); return; }
+    let found = null;
+    for (const [k, e] of Object.entries(emap)) {
+        if (low.includes(k) || k.includes(low)) { found = {k, e}; break; }
+    }
+    if (found) {
+        curE = found.e;
+        document.getElementById('e-icon').textContent = found.e;
+        document.getElementById('e-name').textContent = found.k.charAt(0).toUpperCase() + found.k.slice(1);
+        document.getElementById('e-val').value = found.e;
+        box.classList.add('show');
+    } else {
+        document.getElementById('e-val').value = '🍿';
+        box.classList.remove('show');
+    }
+}
+function acceptEmoji() {
+    document.getElementById('e-val').value = curE;
+    document.getElementById('e-sug').classList.remove('show');
+}
