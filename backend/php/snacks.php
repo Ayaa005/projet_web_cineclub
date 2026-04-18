@@ -39,7 +39,6 @@ $nu = count(array_filter($snacks, fn($s) => $s['status']==='unassigned'));
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <title>Snacks - CineClub</title>
     <link rel="stylesheet" href="/cineclub/css/style.css">
-    <script src="/PROJET_WEB_CINECLUB/frontend/javascript/script.js"></script>
     <style>
     .btn-del-snack {
         display: flex; align-items: center; justify-content: center;
@@ -212,7 +211,29 @@ const emap = {
     'muffin':'🧁','cupcake':'🧁','brownie':'🍫','pretzel':'🥨',
 };
 let curE = '🍿';
-
+function suggestEmoji(t) {
+    const low = t.toLowerCase().trim();
+    const box = document.getElementById('e-sug');
+    if (!low) { box.classList.remove('show'); return; }
+    let found = null;
+    for (const [k, e] of Object.entries(emap)) {
+        if (low.includes(k) || k.includes(low)) { found = {k, e}; break; }
+    }
+    if (found) {
+        curE = found.e;
+        document.getElementById('e-icon').textContent = found.e;
+        document.getElementById('e-name').textContent = found.k.charAt(0).toUpperCase() + found.k.slice(1);
+        document.getElementById('e-val').value = found.e;
+        box.classList.add('show');
+    } else {
+        document.getElementById('e-val').value = '🍿';
+        box.classList.remove('show');
+    }
+}
+function acceptEmoji() {
+    document.getElementById('e-val').value = curE;
+    document.getElementById('e-sug').classList.remove('show');
+}
 </script>
 </body>
 </html>
