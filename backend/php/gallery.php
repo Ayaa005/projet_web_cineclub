@@ -133,6 +133,21 @@ $isConnected = isset($_SESSION['user_id']);
         </form>
     </div>
 </div>
+<script>
+    function openUploadModal() {
+        document.getElementById('upload-form').reset();
+        document.getElementById('upload-caption').value = '';
+        document.getElementById('upload-file').value    = '';
+        document.getElementById('m-upload').style.display = 'flex';
+    }
+
+    function closeUploadModal() {
+        document.getElementById('m-upload').style.display = 'none';
+        document.getElementById('upload-form').reset();
+        document.getElementById('upload-caption').value = '';
+        document.getElementById('upload-file').value    = '';
+    }
+</script>
 <?php endif; ?>
 
 </body>

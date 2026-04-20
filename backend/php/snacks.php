@@ -186,54 +186,65 @@ $nu = count(array_filter($snacks, fn($s) => $s['status']==='unassigned'));
 </div>
 
 <script>
-function tryAddSnack() {
-    <?php if ($session): ?>
-        document.getElementById('m-snack').style.display = 'flex';
-    <?php else: ?>
-        const t = document.getElementById('toast-no-session');
-        t.style.display = 'block';
-        setTimeout(() => t.style.display = 'none', 3000);
-    <?php endif; ?>
-}
+    function tryAddSnack() {
+        <?php if ($session): ?>
+            document.getElementById('m-snack').style.display = 'flex';
+        <?php else: ?>
+            const t = document.getElementById('toast-no-session');
+            t.style.display = 'block';
+            setTimeout(() => t.style.display = 'none', 3000);
+        <?php endif; ?>
+    }
+    function openSnackModal()  { resetSnackForm(); document.getElementById('m-snack').style.display='flex'; }
+    function closeSnackModal() { document.getElementById('m-snack').style.display='none'; resetSnackForm(); }
 
-const emap = {
-    'pizza':'🍕','popcorn':'🍿','nachos':'🧀','chips':'🥔','frites':'🍟',
-    'burger':'🍔','hotdog':'🌭','hot dog':'🌭','sandwich':'🥪','tacos':'🌮',
-    'sushi':'🍣','ramen':'🍜','pates':'🍝','riz':'🍚','soupe':'🍲',
-    'salade':'🥗','glace':'🍦','gateau':'🎂','cake':'🍰','cookie':'🍪',
-    'chocolat':'🍫','bonbons':'🍬','donut':'🍩','croissant':'🥐',
-    'fromage':'🧀','cheese':'🧀','coca':'🥤','soda':'🥤','jus':'🧃',
-    'eau':'💧','cafe':'☕','coffee':'☕','the':'🍵','tea':'🍵',
-    'biere':'🍺','beer':'🍺','vin':'🍷','cocktail':'🍹','smoothie':'🥤',
-    'pomme':'🍎','banane':'🍌','raisin':'🍇','fraise':'🍓','orange':'🍊',
-    'citron':'🍋','ananas':'🍍','mangue':'🥭','avocat':'🥑','carotte':'🥕',
-    'mais':'🌽','cacahuete':'🥜','peanut':'🥜','nutella':'🍫',
-    'muffin':'🧁','cupcake':'🧁','brownie':'🍫','pretzel':'🥨',
-};
-let curE = '🍿';
-function suggestEmoji(t) {
-    const low = t.toLowerCase().trim();
-    const box = document.getElementById('e-sug');
-    if (!low) { box.classList.remove('show'); return; }
-    let found = null;
-    for (const [k, e] of Object.entries(emap)) {
-        if (low.includes(k) || k.includes(low)) { found = {k, e}; break; }
+    function resetSnackForm() {
+        document.getElementById('snack-form').reset();
+        document.getElementById('sn-name').value = '';
+        document.getElementById('e-val').value   = '🍿';
+        document.getElementById('e-sug').classList.remove('show');
+        document.getElementById('e-icon').textContent = '🍿';
+        curE = '🍿';
     }
-    if (found) {
-        curE = found.e;
-        document.getElementById('e-icon').textContent = found.e;
-        document.getElementById('e-name').textContent = found.k.charAt(0).toUpperCase() + found.k.slice(1);
-        document.getElementById('e-val').value = found.e;
-        box.classList.add('show');
-    } else {
-        document.getElementById('e-val').value = '🍿';
-        box.classList.remove('show');
+
+    const emap = {
+        'pizza':'🍕','popcorn':'🍿','nachos':'🧀','chips':'🥔','frites':'🍟',
+        'burger':'🍔','hotdog':'🌭','hot dog':'🌭','sandwich':'🥪','tacos':'🌮',
+        'sushi':'🍣','ramen':'🍜','pates':'🍝','riz':'🍚','soupe':'🍲',
+        'salade':'🥗','glace':'🍦','gateau':'🎂','cake':'🍰','cookie':'🍪',
+        'chocolat':'🍫','bonbons':'🍬','donut':'🍩','croissant':'🥐',
+        'fromage':'🧀','cheese':'🧀','coca':'🥤','soda':'🥤','jus':'🧃',
+        'eau':'💧','cafe':'☕','coffee':'☕','the':'🍵','tea':'🍵',
+        'biere':'🍺','beer':'🍺','vin':'🍷','cocktail':'🍹','smoothie':'🥤',
+        'pomme':'🍎','banane':'🍌','raisin':'🍇','fraise':'🍓','orange':'🍊',
+        'citron':'🍋','ananas':'🍍','mangue':'🥭','avocat':'🥑','carotte':'🥕',
+        'mais':'🌽','cacahuete':'🥜','peanut':'🥜','nutella':'🍫',
+        'muffin':'🧁','cupcake':'🧁','brownie':'🍫','pretzel':'🥨',
+    };
+    let curE = '🍿';
+    function suggestEmoji(t) {
+        const low = t.toLowerCase().trim();
+        const box = document.getElementById('e-sug');
+        if (!low) { box.classList.remove('show'); return; }
+        let found = null;
+        for (const [k, e] of Object.entries(emap)) {
+            if (low.includes(k) || k.includes(low)) { found = {k, e}; break; }
+        }
+        if (found) {
+            curE = found.e;
+            document.getElementById('e-icon').textContent = found.e;
+            document.getElementById('e-name').textContent = found.k.charAt(0).toUpperCase() + found.k.slice(1);
+            document.getElementById('e-val').value = found.e;
+            box.classList.add('show');
+        } else {
+            document.getElementById('e-val').value = '🍿';
+            box.classList.remove('show');
+        }
     }
-}
-function acceptEmoji() {
-    document.getElementById('e-val').value = curE;
-    document.getElementById('e-sug').classList.remove('show');
-}
+    function acceptEmoji() {
+        document.getElementById('e-val').value = curE;
+        document.getElementById('e-sug').classList.remove('show');
+    }
 </script>
 </body>
 </html>
