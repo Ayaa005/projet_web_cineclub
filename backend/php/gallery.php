@@ -90,7 +90,7 @@ $isConnected = isset($_SESSION['user_id']);
                 <span><?= htmlspecialchars($p['movie_title'] ?? '') ?></span>
 
                 <?php if ($isConnected): ?>
-                <form method="POST" action="./actions/delete_photo.php">
+                <form method="POST" action="./delete_photo.php">
                     <input type="hidden" name="photo_id" value="<?= $p['id'] ?>">
                     <button type="submit" class="btn-del-photo">🗑 Delete</button>
                 </form>
