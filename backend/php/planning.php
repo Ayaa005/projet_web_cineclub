@@ -1,19 +1,19 @@
 <?php
-require 'config/db.php';
+require '../../config/db.php';
 session_start();
-if (!isset($_SESSION['user_id'])) { header("Location: /cineclub/welcome.php"); exit; }
+if (!isset($_SESSION['user_id'])) { header("Location: ./welcome.php"); exit; }
 
 $org_id = $_SESSION['organizer_id'];
 $isOrg  = $_SESSION['role'] === 'organizer';
 
-// ── AUTO-ARCHIVAGE : sessions dont la date+heure est passée → status = 'past'
-// On compare session_date + session_time avec NOW()
+// ── AUTO-ARCHIVING: sessions where date+time has passed → status = 'past'
+// Compares session_date + session_time with NOW()
 $pdo->prepare("
     UPDATE sessions
     SET status = 'past'
     WHERE organizer_id = ?
-      AND status = 'upcoming'
-      AND TIMESTAMP(session_date, session_time) < NOW()
+    AND status = 'upcoming'
+    AND TIMESTAMP(session_date, session_time) < NOW()
 ")->execute([$org_id]);
 
 $errors  = [];
@@ -25,9 +25,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $isOrg) {
     $h        = $_POST['session_time']      ?? '20:00';
     $loc      = htmlspecialchars(trim($_POST['location'] ?? ''));
 
-    if (!$movie_id) $errors[] = 'Sélectionne un film.';
-    if (empty($d))  $errors[] = 'La date est obligatoire.';
-    elseif (strtotime($d) < strtotime('today')) $errors[] = 'La date doit être dans le futur.';
+    if (!$movie_id) $errors[] = 'Please select a movie.';
+    if (empty($d))  $errors[] = 'Date is required.';
+    elseif (strtotime($d) < strtotime('today')) $errors[] = 'The date must be in the future.';
 
     if (empty($errors)) {
         $sm = $pdo->prepare("SELECT title, poster FROM movie_suggestions WHERE id=? AND organizer_id=?");
@@ -41,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $isOrg) {
             $sid = $pdo->lastInsertId();
             $pdo->prepare("INSERT IGNORE INTO session_participants(session_id,user_id,status) VALUES(?,?,'attending')")
                 ->execute([$sid, $_SESSION['user_id']]);
-            $success = 'Session ajoutée !';
+            $success = 'Session added successfully!';
         }
     }
 }
@@ -70,12 +70,12 @@ if ($cm < 1)  { $cm = 12; $cy--; }
 if ($cm > 12) { $cm = 1;  $cy++; }
 ?>
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <title>Planning - CineClub</title>
-    <link rel="stylesheet" href="/cineclub/css/style.css">
+    <link rel="stylesheet" href="../../frontend/css/style.css">
     <style>
     .mp-wrap { position: relative; }
     .movie-picker-drop {
@@ -110,7 +110,7 @@ if ($cm > 12) { $cm = 1;  $cy++; }
     </style>
 </head>
 <body>
-<?php include 'includes/navbar.php'; ?>
+<?php include '../includes/navbar.php'; ?>
 
 <div class="page-body">
 <div class="container">
@@ -135,7 +135,6 @@ if ($cm > 12) { $cm = 1;  $cy++; }
 
     <div class="planning-grid">
 
-        <!-- Calendrier -->
         <div class="card cal-box">
             <div class="cal-top">
                 <a href="?month=<?=$cm-1?>&year=<?=$cy?>" class="cal-nav-btn">‹</a>
@@ -168,7 +167,6 @@ if ($cm > 12) { $cm = 1;  $cy++; }
             </div>
         </div>
 
-        <!-- Sessions à venir -->
         <div>
             <h2 class="section-title" style="margin-bottom:14px">
                 UPCOMING <span>SESSIONS</span>
@@ -179,7 +177,7 @@ if ($cm > 12) { $cm = 1;  $cy++; }
                 <div class="empty-icon">📅</div>
                 <h3>No sessions yet</h3>
                 <?php if ($isOrg): ?>
-                <p>Ajoute la première session !</p>
+                <p>Add the first session!</p>
                 <?php endif; ?>
             </div>
             <?php else: ?>
@@ -213,10 +211,10 @@ if ($cm > 12) { $cm = 1;  $cy++; }
                         </span>
                     </div>
                     <div class="sess-actions">
-                        <a href="/cineclub/participants.php" class="btn-ghost" style="font-size:12px;padding:6px 12px">Participants</a>
-                        <a href="/cineclub/snacks.php"       class="btn-ghost" style="font-size:12px;padding:6px 12px">Snacks</a>
+                        <a href="./participants.php" class="btn-ghost" style="font-size:12px;padding:6px 12px">Participants</a>
+                        <a href="./snacks.php"       class="btn-ghost" style="font-size:12px;padding:6px 12px">Snacks</a>
                         <?php if ($isOrg): ?>
-                        <form method="POST" action="/cineclub/actions/delete_session.php" style="margin:0">
+                        <form method="POST" action="./delete_session.php" style="margin:0">
                             <input type="hidden" name="session_id" value="<?= $s['id'] ?>">
                             <button type="submit" class="btn-ghost"
                                     style="font-size:12px;padding:6px 12px;color:#ff6b6b;border-color:rgba(255,107,107,.3)">
@@ -235,10 +233,8 @@ if ($cm > 12) { $cm = 1;  $cy++; }
 </div>
 </div>
 
-<!-- Modal Add Session -->
 <?php if ($isOrg): ?>
-<div id="m-plan" class="modal-bg" style="display:none"
-     onclick="if(event.target===this)this.style.display='none'">
+<div id="m-plan" class="modal-bg" style="display:none" onclick="if(event.target===this)this.style.display='none'">
     <div class="modal" style="max-width:520px">
         <h2>📅 Add Session</h2>
 
@@ -247,23 +243,13 @@ if ($cm > 12) { $cm = 1;  $cy++; }
             <input type="hidden" name="movie_id" id="sel-mid" value="">
 
             <div class="form-field">
-                <label>Film * (depuis Voting)</label>
+                <label>Movie * (from Voting)</label>
                 <div class="mp-wrap">
-                    <input type="text" id="mp-q" class="mp-input"
-                           placeholder="Rechercher un film suggéré..."
-                           oninput="filterMp(this.value)"
-                           onfocus="document.getElementById('mp-drop').classList.add('open')"
-                           autocomplete="off">
+                    <input type="text" id="mp-q" class="mp-input" placeholder="Search for a suggested movie..." oninput="filterMp(this.value)" onfocus="document.getElementById('mp-drop').classList.add('open')" autocomplete="off">
                     <div class="movie-picker-drop" id="mp-drop">
                         <?php foreach ($mlist as $m): ?>
-                        <div class="mp-item"
-                             data-id="<?= $m['id'] ?>"
-                             data-title="<?= htmlspecialchars($m['title']) ?>"
-                             data-poster="<?= htmlspecialchars($m['poster']) ?>"
-                             onclick="selectMp(this)">
-                            <img class="mp-img"
-                                 src="/cineclub/<?= htmlspecialchars($m['poster']) ?>"
-                                 onerror="this.src='/cineclub/uploads/posters/default.jpg'" alt="">
+                        <div class="mp-item" data-id="<?= $m['id'] ?>" data-title="<?= htmlspecialchars($m['title']) ?>" data-poster="<?= htmlspecialchars($m['poster']) ?>" onclick="selectMp(this)">
+                            <img class="mp-img" src="../../uploads/posters/<?= htmlspecialchars($m['poster']) ?>" onerror="this.src='../../uploads/posters/default.jpg'" alt="">
                             <div class="mp-info">
                                 <strong><?= htmlspecialchars($m['title']) ?></strong>
                                 <span><?= $m['year'] ?></span>
@@ -285,18 +271,18 @@ if ($cm > 12) { $cm = 1;  $cy++; }
                     <input type="date" name="session_date" min="<?= date('Y-m-d') ?>" required>
                 </div>
                 <div class="form-field">
-                    <label>Heure *</label>
+                    <label>Time *</label>
                     <input type="time" name="session_time" value="20:00" required>
                 </div>
             </div>
 
             <div class="form-field">
-                <label>Lieu</label>
-                <input type="text" name="location" placeholder="Ex: Chez Alice, Salle commune...">
+                <label>Location</label>
+                <input type="text" name="location" placeholder="e.g.: Alice's place, Common room...">
             </div>
 
             <p style="font-size:11px;color:var(--text3);margin-top:8px">
-                ℹ La session passera automatiquement en Archives une fois la date et l'heure dépassées.
+                ℹ The session will automatically move to Archives once the date and time have passed.
             </p>
 
             <div class="modal-btns">
@@ -314,15 +300,15 @@ if ($cm > 12) { $cm = 1;  $cy++; }
         <?php else: ?>
         <div style="text-align:center;padding:20px;color:var(--text3)">
             <p style="font-size:32px;margin-bottom:10px">🎬</p>
-            <p>Aucun film dans Voting.</p>
+            <p>No movies in Voting.</p>
             <p style="font-size:12px;margin-top:6px">
-                Ajoute d'abord des films depuis
-                <a href="/cineclub/voting.php" style="color:var(--red)">Voting</a>.
+                First add movies from
+                <a href="./voting.php" style="color:var(--red)">Voting</a>.
             </p>
         </div>
         <div class="modal-btns" style="justify-content:flex-end">
             <button class="btn-dark" onclick="document.getElementById('m-plan').style.display='none'">
-                Fermer
+                Close
             </button>
         </div>
         <?php endif; ?>
@@ -330,38 +316,38 @@ if ($cm > 12) { $cm = 1;  $cy++; }
 </div>
 
 <script>
-function filterMp(q) {
-    const drop = document.getElementById('mp-drop');
-    drop.classList.add('open');
-    drop.querySelectorAll('.mp-item').forEach(i => {
-        i.style.display = (!q || i.dataset.title.toLowerCase().includes(q.toLowerCase()))
-            ? '' : 'none';
+    function filterMp(q) {
+        const drop = document.getElementById('mp-drop');
+        drop.classList.add('open');
+        drop.querySelectorAll('.mp-item').forEach(i => {
+            i.style.display = (!q || i.dataset.title.toLowerCase().includes(q.toLowerCase()))
+                ? '' : 'none';
+        });
+    }
+    function selectMp(el) {
+        document.getElementById('sel-mid').value = el.dataset.id;
+        document.getElementById('mp-q').value    = el.dataset.title;
+        document.getElementById('mp-drop').classList.remove('open');
+        document.getElementById('mp-prev-img').src = '/projet_web_cineclub/' + el.dataset.poster;
+        document.getElementById('mp-prev-t').textContent = el.dataset.title;
+        document.getElementById('mp-prev').classList.add('show');
+        document.querySelectorAll('.mp-item').forEach(i => i.classList.remove('selected'));
+        el.classList.add('selected');
+        const btn = document.getElementById('mp-submit');
+        btn.disabled = false; btn.style.opacity = '1'; btn.style.cursor = 'pointer';
+    }
+    function clearMp() {
+        document.getElementById('sel-mid').value = '';
+        document.getElementById('mp-q').value    = '';
+        document.getElementById('mp-prev').classList.remove('show');
+        document.querySelectorAll('.mp-item').forEach(i => i.classList.remove('selected'));
+        const btn = document.getElementById('mp-submit');
+        btn.disabled = true; btn.style.opacity = '0.5'; btn.style.cursor = 'not-allowed';
+    }
+    document.addEventListener('click', e => {
+        if (!e.target.closest('.mp-wrap'))
+            document.getElementById('mp-drop')?.classList.remove('open');
     });
-}
-function selectMp(el) {
-    document.getElementById('sel-mid').value = el.dataset.id;
-    document.getElementById('mp-q').value    = el.dataset.title;
-    document.getElementById('mp-drop').classList.remove('open');
-    document.getElementById('mp-prev-img').src = '/cineclub/' + el.dataset.poster;
-    document.getElementById('mp-prev-t').textContent = el.dataset.title;
-    document.getElementById('mp-prev').classList.add('show');
-    document.querySelectorAll('.mp-item').forEach(i => i.classList.remove('selected'));
-    el.classList.add('selected');
-    const btn = document.getElementById('mp-submit');
-    btn.disabled = false; btn.style.opacity = '1'; btn.style.cursor = 'pointer';
-}
-function clearMp() {
-    document.getElementById('sel-mid').value = '';
-    document.getElementById('mp-q').value    = '';
-    document.getElementById('mp-prev').classList.remove('show');
-    document.querySelectorAll('.mp-item').forEach(i => i.classList.remove('selected'));
-    const btn = document.getElementById('mp-submit');
-    btn.disabled = true; btn.style.opacity = '0.5'; btn.style.cursor = 'not-allowed';
-}
-document.addEventListener('click', e => {
-    if (!e.target.closest('.mp-wrap'))
-        document.getElementById('mp-drop')?.classList.remove('open');
-});
 </script>
 
 <?php if (!empty($errors)): ?>

@@ -1,7 +1,7 @@
 <?php
-require 'config/db.php';
+require '../../config/db.php';
 session_start();
-if (!isset($_SESSION['user_id'])) { header("Location: /cineclub/welcome.php"); exit; }
+if (!isset($_SESSION['user_id'])) { header("Location: ./welcome.php"); exit; }
 
 $org_id = $_SESSION['organizer_id'];
 $isOrg  = $_SESSION['role'] === 'organizer';
@@ -38,7 +38,7 @@ $nu = count(array_filter($snacks, fn($s) => $s['status']==='unassigned'));
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <title>Snacks - CineClub</title>
-    <link rel="stylesheet" href="/cineclub/css/style.css">
+    <link rel="stylesheet" href="../../frontend/css/style.css">
     <style>
     .btn-del-snack {
         display: flex; align-items: center; justify-content: center;
@@ -51,7 +51,7 @@ $nu = count(array_filter($snacks, fn($s) => $s['status']==='unassigned'));
     </style>
 </head>
 <body>
-<?php include 'includes/navbar.php'; ?>
+<?php include '../includes/navbar.php'; ?>
 
 <div class="page-body">
 <div class="container">
@@ -80,7 +80,7 @@ $nu = count(array_filter($snacks, fn($s) => $s['status']==='unassigned'));
         <h3>No session yet</h3>
         <p>Tu dois d'abord créer une session depuis la page Planning pour pouvoir ajouter des snacks.</p>
         <?php if ($isOrg): ?>
-        <a href="/cineclub/planning.php" class="btn-red" style="margin-top:14px">
+        <a href="./planning.php" class="btn-red" style="margin-top:14px">
             📅 Go to Planning
         </a>
         <?php endif; ?>
@@ -119,20 +119,20 @@ $nu = count(array_filter($snacks, fn($s) => $s['status']==='unassigned'));
             <?php if ($sn['aname']): ?>
                 <p class="snack-by">Brought by <strong><?= htmlspecialchars($sn['aname']) ?></strong></p>
                 <?php if ($isOrg && $sn['status']==='pending'): ?>
-                <form method="POST" action="/cineclub/actions/confirm_snack.php">
+                <form method="POST" action="./confirm_snack.php">
                     <input type="hidden" name="snack_id" value="<?= $sn['id'] ?>">
                     <button class="btn-conf">✓ Confirm</button>
                 </form>
                 <?php endif; ?>
             <?php else: ?>
                 <p class="snack-none">No one assigned yet</p>
-                <form method="POST" action="/cineclub/actions/volunteer_snack.php">
+                <form method="POST" action="./volunteer_snack.php">
                     <input type="hidden" name="snack_id" value="<?= $sn['id'] ?>">
                     <button class="btn-vol">🙋 Volunteer</button>
                 </form>
             <?php endif; ?>
             <?php if ($isOrg): ?>
-            <form method="POST" action="/cineclub/actions/delete_snack.php">
+            <form method="POST" action="./delete_snack.php">
                 <input type="hidden" name="snack_id" value="<?= $sn['id'] ?>">
                 <button type="submit" class="btn-del-snack">🗑 Delete snack</button>
             </form>
@@ -150,7 +150,7 @@ $nu = count(array_filter($snacks, fn($s) => $s['status']==='unassigned'));
      onclick="if(event.target===this)this.style.display='none'">
     <div class="modal">
         <h2>🍿 Add a Snack</h2>
-        <form method="POST" action="/cineclub/actions/add_snack.php">
+        <form method="POST" action="./add_snack.php">
             <input type="hidden" name="session_id" value="<?= $session['id'] ?? 0 ?>">
             <input type="hidden" name="emoji" id="e-val" value="🍿">
             <div class="form-field">

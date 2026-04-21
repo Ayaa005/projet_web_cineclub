@@ -1,32 +1,32 @@
 <?php
-require 'config/db.php';
+require '../../config/db.php';
 session_start();
-if (isset($_SESSION['user_id'])) { header("Location: /cineclub/index.php"); exit; }
+if (isset($_SESSION['user_id'])) { header("Location: ./index.php"); exit; }
 
 $error = $_GET['error'] ?? '';
 $tab   = $_GET['tab']   ?? 'login';
 $role  = $_GET['role']  ?? 'organizer';
 
 $msgs = [
-    'wrong'         => 'Email ou mot de passe incorrect.',
-    'empty'         => 'Veuillez remplir tous les champs.',
-    'short_pass'    => 'Mot de passe trop court (min 6 caractères).',
-    'email_taken'   => 'Cet email est déjà utilisé.',
-    'invalid_code'  => 'Code d\'invitation invalide.',
-    'wrong_role'    => 'Ce compte n\'existe pas avec ce rôle. Vérifiez l\'onglet sélectionné.',
+    'wrong'         => 'Incorrect email or password.',
+    'empty'         => 'Please fill in all fields.',
+    'short_pass'    => 'Password too short (min 6 characters).',
+    'email_taken'   => 'This email is already in use.',
+    'invalid_code'  => 'Invalid invitation code.',
+    'wrong_role'    => 'This account does not exist with this role. Check the selected tab.',
 ];
 ?>
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <title>CineClub — Organisez vos soirées cinéma</title>
-    <link rel="stylesheet" href="/cineclub/css/style.css">
+    <title>CineClub — Organize your movie nights</title>
+    <link rel="stylesheet" href="../../frontend/css/style.css">
 </head>
 <body class="welcome-page">
 
-<!-- ═══════ HERO ═══════ -->
+<!-- HERO -->
 <section class="welcome-hero">
     <div class="welcome-hero-bg"></div>
 
@@ -35,77 +35,77 @@ $msgs = [
     </div>
 
     <div class="welcome-hero-content">
-        <h1>Vos soirées cinéma,<br>organisées ensemble</h1>
-        <h2>Votez · Planifiez · Snackez</h2>
-        <p>Invitez vos amis, choisissez le film, gérez les snacks.<br>Tout en un seul endroit. Gratuit.</p>
+        <h1>Your movie nights,<br>organized together</h1>
+        <h2>Vote · Plan · Snack</h2>
+        <p>Invite your friends, choose the movie, manage snacks.<br>All in one place. Free.</p>
 
-        <!-- ═══ BOÎTE LOGIN ═══ -->
+        <!-- LOGIN BOX -->
         <div class="welcome-login-box">
 
             <?php if ($error): ?>
-            <div class="wl-error"><?= htmlspecialchars($msgs[$error] ?? 'Erreur.') ?></div>
+            <div class="wl-error"><?= htmlspecialchars($msgs[$error] ?? 'Error.') ?></div>
             <?php endif; ?>
 
-            <!-- Tabs principaux : Se connecter / Créer un compte -->
+            <!-- Main Tabs -->
             <div class="wl-tabs">
                 <button class="wl-tab <?= $tab==='login'?'active':'' ?>"
-                        onclick="setTab('login')">Se connecter</button>
+                        onclick="setTab('login')">Log in</button>
                 <button class="wl-tab <?= $tab==='register'?'active':'' ?>"
-                        onclick="setTab('register')">Créer un compte</button>
+                        onclick="setTab('register')">Create an account</button>
             </div>
 
-            <!-- ════ CRÉER UN COMPTE (simple, sans rôle) ════ -->
+            <!-- REGISTER -->
             <div id="form-register" <?= $tab!=='register'?'style="display:none"':'' ?>>
                 <p style="font-size:12px;color:rgba(255,255,255,.5);margin-bottom:14px;line-height:1.5">
-                    Crée ton compte. Ensuite tu pourras te connecter comme
-                    <strong>organisateur</strong> (ta propre interface) ou comme
-                    <strong>membre</strong> (rejoindre l'interface d'un ami).
+                    Create your account. Then you can log in as
+                    <strong>organizer</strong> (your own interface) or as
+                    <strong>member</strong> (join a friend's interface).
                 </p>
-                <form method="POST" action="/cineclub/actions/register_action.php">
+                <form method="POST" action="./register_action.php">
                     <input class="wl-input" type="text"  name="username"
-                           placeholder="Ton prénom" required>
+                           placeholder="Your name" required>
                     <input class="wl-input" type="email" name="email"
                            placeholder="Email" required>
                     <div class="wl-pwd">
                         <input class="wl-input" type="password" name="password"
-                               id="rp" placeholder="Mot de passe (min 6 caractères)"
+                               id="rp" placeholder="Password (min 6 characters)"
                                required style="margin-bottom:0">
                         <button type="button" class="wl-pwd-toggle" onclick="tog('rp')">👁</button>
                     </div>
                     <button type="submit" class="wl-submit" style="margin-top:14px">
-                        Créer mon compte →
+                        Create my account →
                     </button>
                 </form>
                 <p class="wl-footer">
-                    Déjà un compte ?
-                    <a href="#" onclick="setTab('login');return false">Se connecter</a>
+                    Already have an account?
+                    <a href="#" onclick="setTab('login');return false">Log in</a>
                 </p>
             </div>
 
-            <!-- ════ SE CONNECTER ════ -->
+            <!-- LOGIN -->
             <div id="form-login" <?= $tab!=='login'?'style="display:none"':'' ?>>
 
-                <!-- Sous-onglets : Organisateur / Membre -->
+                <!-- Role Tabs -->
                 <div class="wl-tabs" style="margin-bottom:16px">
                     <button class="wl-tab <?= $role==='organizer'?'active':'' ?>"
                             id="rt-org" onclick="setRole('organizer')">
-                        👑 Organisateur
+                        👑 Organizer
                     </button>
                     <button class="wl-tab <?= $role==='member'?'active':'' ?>"
                             id="rt-mem" onclick="setRole('member')">
-                        👤 Membre
+                        👤 Member
                     </button>
                 </div>
 
-                <!-- Description selon rôle -->
+                <!-- Description -->
                 <p id="desc-org" style="font-size:12px;color:rgba(255,255,255,.45);margin-bottom:12px;<?= $role==='member'?'display:none':'' ?>">
-                    Tu accèdes à <strong>ton interface personnelle</strong>. Si c'est ta première connexion, ton espace sera vide et prêt à configurer.
+                    You access your <strong>personal interface</strong>. If it's your first login, your space will be empty and ready to configure.
                 </p>
                 <p id="desc-mem" style="font-size:12px;color:rgba(255,255,255,.45);margin-bottom:12px;<?= $role==='organizer'?'display:none':'' ?>">
-                    Tu accèdes à <strong>l'interface d'un organisateur</strong> grâce au code qu'il t'a envoyé.
+                    You access an <strong>organizer’s interface</strong> using the code they shared with you.
                 </p>
 
-                <form method="POST" action="/cineclub/actions/login_action.php">
+                <form method="POST" action="./login_action.php">
                     <input type="hidden" name="login_type" id="login_type"
                            value="<?= $role ?>">
 
@@ -114,59 +114,58 @@ $msgs = [
 
                     <div class="wl-pwd">
                         <input class="wl-input" type="password" name="password"
-                               id="lp" placeholder="Mot de passe"
+                               id="lp" placeholder="Password"
                                required style="margin-bottom:0">
                         <button type="button" class="wl-pwd-toggle" onclick="tog('lp')">👁</button>
                     </div>
 
-                    <!-- Code invitation : visible uniquement si Membre -->
+                    <!-- Invitation Code -->
                     <div id="code-field" style="<?= $role==='organizer'?'display:none':'' ?>">
                         <input class="wl-input" type="text" name="invite_code"
                                id="invite_code"
-                               placeholder="Code invitation (ex : ABCD-XYZ9)"
+                               placeholder="Invitation code (e.g. ABCD-XYZ9)"
                                style="text-transform:uppercase;letter-spacing:4px;
                                       text-align:center;font-size:16px;
                                       font-weight:700;margin-top:4px">
                     </div>
 
                     <button type="submit" class="wl-submit" id="submit-btn">
-                        <?= $role==='organizer' ? 'Se connecter comme organisateur' : 'Rejoindre l\'interface' ?>
+                        <?= $role==='organizer' ? 'Log in as organizer' : 'Join the interface' ?>
                     </button>
                 </form>
 
                 <p class="wl-footer">
-                    Pas encore de compte ?
-                    <a href="#" onclick="setTab('register');return false">Créer un compte</a>
+                    Don’t have an account yet?
+                    <a href="#" onclick="setTab('register');return false">Create an account</a>
                 </p>
             </div>
 
-        </div><!-- fin welcome-login-box -->
-    </div><!-- fin welcome-hero-content -->
+        </div>
+    </div>
 </section>
 
-<!-- Divider rouge -->
 <div class="welcome-divider"></div>
 
-<!-- Features -->
+<!-- FEATURES -->
 <section class="welcome-features">
     <div class="wf-card">
-        <h3>Votez pour le prochain film</h3>
-        <p>Suggérez des films et votez avec vos amis. Le plus voté est sélectionné.</p>
+        <h3>Vote for the next movie</h3>
+        <p>Suggest movies and vote with your friends. The most voted one is selected.</p>
         <div class="wf-icon">🗳</div>
     </div>
     <div class="wf-card">
-        <h3>Organisez les snacks</h3>
-        <p>Chaque membre se porte volontaire pour un snack. L'organisateur confirme.</p>
+        <h3>Organize snacks</h3>
+        <p>Each member volunteers for a snack. The organizer confirms.</p>
         <div class="wf-icon">🍿</div>
     </div>
     <div class="wf-card">
-        <h3>Code d'invitation unique</h3>
-        <p>Chaque organisateur a un code fixe et permanent. Vos amis l'utilisent pour vous rejoindre.</p>
+        <h3>Unique invitation code</h3>
+        <p>Each organizer has a fixed and permanent code. Your friends use it to join you.</p>
         <div class="wf-icon">🎟</div>
     </div>
     <div class="wf-card">
-        <h3>Plusieurs organisateurs</h3>
-        <p>Chaque personne peut créer sa propre interface et inviter ses propres membres.</p>
+        <h3>Multiple organizers</h3>
+        <p>Everyone can create their own interface and invite their own members.</p>
         <div class="wf-icon">🎬</div>
     </div>
 </section>
@@ -175,16 +174,16 @@ $msgs = [
 
 <!-- FAQ -->
 <section class="welcome-faq">
-    <h2>Questions fréquentes</h2>
+    <h2>Frequently Asked Questions</h2>
     <?php foreach ([
-        ["Puis-je être organisateur ET membre ?",
-         "Oui ! Avec le même compte, connecte-toi en tant qu'organisateur pour gérer tes soirées, ou en tant que membre pour rejoindre celles d'un ami avec son code d'invitation."],
-        ["Comment inviter des amis ?",
-         "Connecte-toi comme organisateur. Depuis la page Participants, tu trouveras ton code d'invitation permanent. Partage-le par WhatsApp."],
-        ["Le code d'invitation change-t-il ?",
-         "Non. Chaque organisateur a UN code FIXE et UNIQUE. Il ne change jamais. Vos amis peuvent l'utiliser à tout moment."],
-        ["Que se passe-t-il à ma première connexion comme organisateur ?",
-         "Ton interface est complètement vide. À toi de la personnaliser : ajouter des films, créer une session, inviter tes membres."],
+        ["Can I be both organizer AND member?",
+         "Yes! With the same account, log in as organizer to manage your events, or as member to join a friend’s event using their invitation code."],
+        ["How can I invite friends?",
+         "Log in as organizer. From the Participants page, you will find your permanent invitation code. Share it via WhatsApp."],
+        ["Does the invitation code change?",
+         "No. Each organizer has ONE fixed and unique code. It never changes. Your friends can use it anytime."],
+        ["What happens on my first login as organizer?",
+         "Your interface is completely empty. You can customize it: add movies, create a session, invite members."],
     ] as $i => $f): ?>
     <div class="faq-item">
         <div class="faq-q" onclick="tFaq(<?=$i?>)">
@@ -197,18 +196,18 @@ $msgs = [
     <div class="faq-end"></div>
 </section>
 
-<!-- CTA bas de page -->
+<!-- CTA -->
 <div class="welcome-cta">
     <div>
-        <p>Prêt pour votre prochaine soirée cinéma ?</p>
-        <span>Rejoignez CineClub gratuitement dès maintenant.</span>
+        <p>Ready for your next movie night?</p>
+        <span>Join CineClub for free now.</span>
     </div>
     <div style="display:flex;gap:10px">
         <a href="#" onclick="setTab('register');scrollUp();return false" class="btn-red">
-            Créer un compte
+            Create an account
         </a>
         <a href="#" onclick="setTab('login');scrollUp();return false" class="btn-dark">
-            Se connecter
+            Log in
         </a>
     </div>
 </div>
@@ -237,7 +236,7 @@ function setRole(r) {
     if (r==='member') code.setAttribute('required','');
     else code.removeAttribute('required');
     document.getElementById('submit-btn').textContent =
-        r==='organizer' ? 'Se connecter comme organisateur' : 'Rejoindre l\'interface';
+        r==='organizer' ? 'Log in as organizer' : 'Join the interface';
 }
 
 function tog(id) {
@@ -256,7 +255,7 @@ function scrollUp() {
     document.querySelector('.welcome-hero-content').scrollIntoView({behavior:'smooth'});
 }
 
-// Restaurer l'état selon les paramètres GET
+// Restore state
 <?php if ($tab==='register'): ?>setTab('register');<?php endif; ?>
 <?php if ($tab==='login' && $role==='member'): ?>setRole('member');<?php endif; ?>
 </script>

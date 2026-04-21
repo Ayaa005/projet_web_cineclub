@@ -1,5 +1,5 @@
 <?php
-require 'config/db.php';
+require '../../config/db.php';
 session_start();
 
 $photos = $pdo->query("
@@ -13,12 +13,12 @@ $photos = $pdo->query("
 $isConnected = isset($_SESSION['user_id']);
 ?>
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <title>Gallery - CineClub</title>
-    <link rel="stylesheet" href="/cineclub/css/style.css">
+    <link rel="stylesheet" href="../../frontend/css/style.css">
     <style>
         .gal-card {
             border-radius: 4px;
@@ -52,7 +52,8 @@ $isConnected = isset($_SESSION['user_id']);
     </style>
 </head>
 <body>
-<?php include 'includes/navbar.php'; ?>
+
+<?php include '../includes/navbar.php'; ?>
 
 <div class="page-body">
 <div class="container">
@@ -62,6 +63,7 @@ $isConnected = isset($_SESSION['user_id']);
             <h1 class="page-title">GALL<span>ERY</span></h1>
             <p class="subtitle">Photos from our movie nights</p>
         </div>
+
         <?php if ($isConnected): ?>
         <button class="btn-red" onclick="document.getElementById('m-upload').style.display='flex'">
             📷 Upload Photo
@@ -73,22 +75,22 @@ $isConnected = isset($_SESSION['user_id']);
     <div class="empty-state">
         <div class="empty-icon">🖼</div>
         <h3>No photos yet</h3>
-        <p>Partage les photos de vos soirées cinéma !</p>
+        <p>Share photos from your movie nights!</p>
     </div>
     <?php else: ?>
     <div class="gal-grid">
         <?php foreach ($photos as $p): ?>
         <div class="gal-card">
-            <img src="/cineclub/<?= htmlspecialchars($p['image_path']) ?>"
-                 onerror="this.src='/cineclub/uploads/gallery/default.jpg'"
+            <img src="/projet_web_cineclub/<?= htmlspecialchars($p['image_path']) ?>"
+                 onerror="this.src='../../uploads/gallery/default.jpg'"
                  alt="<?= htmlspecialchars($p['caption'] ?? '') ?>">
+
             <div class="gal-overlay">
                 <strong><?= htmlspecialchars($p['caption'] ?? 'Photo') ?></strong>
                 <span><?= htmlspecialchars($p['movie_title'] ?? '') ?></span>
 
-                <!-- Bouton supprimer pour tous les connectés -->
                 <?php if ($isConnected): ?>
-                <form method="POST" action="/cineclub/actions/delete_photo.php">
+                <form method="POST" action="./actions/delete_photo.php">
                     <input type="hidden" name="photo_id" value="<?= $p['id'] ?>">
                     <button type="submit" class="btn-del-photo">🗑 Delete</button>
                 </form>
@@ -102,52 +104,42 @@ $isConnected = isset($_SESSION['user_id']);
 </div>
 </div>
 
-<!-- Modal Upload -->
+<!-- Upload Modal -->
 <?php if ($isConnected): ?>
 <div id="m-upload" class="modal-bg" style="display:none"
      onclick="if(event.target===this)this.style.display='none'">
     <div class="modal">
         <h2>📷 Upload Photo</h2>
+
         <p style="font-size:13px;color:var(--text2);margin-bottom:14px">
-            Sélectionne une image depuis n'importe quel dossier de ton ordinateur.
+            Select an image from any folder on your computer.
         </p>
-        <form method="POST" action="/cineclub/actions/upload_photo.php"
+
+        <form method="POST" action="./upload_photo.php"
               enctype="multipart/form-data">
+
             <div class="form-field">
                 <label>Photo * (JPG, PNG, WEBP, GIF)</label>
-                <!-- accept="image/*" permet de parcourir tous les dossiers -->
                 <input type="file" name="photo" accept="image/*" required
                        style="padding:8px;background:var(--bg3);border:1px solid var(--border);border-radius:4px;color:#fff;width:100%;cursor:pointer;">
             </div>
+
             <div class="form-field">
-                <label>Légende (optionnel)</label>
+                <label>Caption (optional)</label>
                 <input type="text" name="caption" placeholder="Movie night setup...">
             </div>
+
             <div class="modal-btns">
                 <button type="submit" class="btn-red">Upload</button>
                 <button type="button" class="btn-dark"
-                    onclick="document.getElementById('m-upload').style.display='none'">
+                        onclick="document.getElementById('m-upload').style.display='none'">
                     Cancel
                 </button>
             </div>
+
         </form>
     </div>
 </div>
-<script>
-    function openUploadModal() {
-        document.getElementById('upload-form').reset();
-        document.getElementById('upload-caption').value = '';
-        document.getElementById('upload-file').value    = '';
-        document.getElementById('m-upload').style.display = 'flex';
-    }
-
-    function closeUploadModal() {
-        document.getElementById('m-upload').style.display = 'none';
-        document.getElementById('upload-form').reset();
-        document.getElementById('upload-caption').value = '';
-        document.getElementById('upload-file').value    = '';
-    }
-</script>
 <?php endif; ?>
 
 </body>
