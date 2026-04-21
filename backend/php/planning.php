@@ -249,7 +249,7 @@ if ($cm > 12) { $cm = 1;  $cy++; }
                     <div class="movie-picker-drop" id="mp-drop">
                         <?php foreach ($mlist as $m): ?>
                         <div class="mp-item" data-id="<?= $m['id'] ?>" data-title="<?= htmlspecialchars($m['title']) ?>" data-poster="<?= htmlspecialchars($m['poster']) ?>" onclick="selectMp(this)">
-                            <img class="mp-img" src="../../uploads/posters/<?= htmlspecialchars($m['poster']) ?>" onerror="this.src='../../uploads/posters/default.jpg'" alt="">
+                            <img class="mp-img" src="/projet_web_cineclub/<?= htmlspecialchars($m['poster']) ?>" onerror="this.src='../../uploads/posters/default.jpg'" alt="">
                             <div class="mp-info">
                                 <strong><?= htmlspecialchars($m['title']) ?></strong>
                                 <span><?= $m['year'] ?></span>
