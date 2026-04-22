@@ -316,38 +316,47 @@ if ($cm > 12) { $cm = 1;  $cy++; }
 </div>
 
 <script>
-    function filterMp(q) {
-        const drop = document.getElementById('mp-drop');
-        drop.classList.add('open');
-        drop.querySelectorAll('.mp-item').forEach(i => {
-            i.style.display = (!q || i.dataset.title.toLowerCase().includes(q.toLowerCase()))
-                ? '' : 'none';
-        });
-    }
-    function selectMp(el) {
-        document.getElementById('sel-mid').value = el.dataset.id;
-        document.getElementById('mp-q').value    = el.dataset.title;
-        document.getElementById('mp-drop').classList.remove('open');
-        document.getElementById('mp-prev-img').src = '/projet_web_cineclub/' + el.dataset.poster;
-        document.getElementById('mp-prev-t').textContent = el.dataset.title;
-        document.getElementById('mp-prev').classList.add('show');
-        document.querySelectorAll('.mp-item').forEach(i => i.classList.remove('selected'));
-        el.classList.add('selected');
-        const btn = document.getElementById('mp-submit');
-        btn.disabled = false; btn.style.opacity = '1'; btn.style.cursor = 'pointer';
-    }
-    function clearMp() {
-        document.getElementById('sel-mid').value = '';
-        document.getElementById('mp-q').value    = '';
+    function openPlanModal()  { resetPlanForm(); document.getElementById('m-plan').style.display='flex'; }
+    function closePlanModal() { document.getElementById('m-plan').style.display='none'; resetPlanForm(); }
+    
+    function resetPlanForm() {
+        document.getElementById('sel-mid').value   = '';
+        document.getElementById('mp-q').value      = '';
+        document.getElementById('plan-date').value = '';
+        document.getElementById('plan-time').value = '20:00';
+        document.getElementById('plan-loc').value  = '';
         document.getElementById('mp-prev').classList.remove('show');
+        document.getElementById('mp-drop').classList.remove('open');
         document.querySelectorAll('.mp-item').forEach(i => i.classList.remove('selected'));
         const btn = document.getElementById('mp-submit');
-        btn.disabled = true; btn.style.opacity = '0.5'; btn.style.cursor = 'not-allowed';
+        btn.disabled = true; btn.style.opacity='0.5'; btn.style.cursor='not-allowed';
     }
-    document.addEventListener('click', e => {
-        if (!e.target.closest('.mp-wrap'))
-            document.getElementById('mp-drop')?.classList.remove('open');
-    });
+    
+    function filterMp(q){
+        const drop=document.getElementById('mp-drop');drop.classList.add('open');
+        drop.querySelectorAll('.mp-item').forEach(i=>{i.style.display=(!q||i.dataset.title.toLowerCase().includes(q.toLowerCase()))?'':'none';});
+    }
+    function selectMp(el){
+        document.getElementById('sel-mid').value=el.dataset.id;
+        document.getElementById('mp-q').value=el.dataset.title;
+        document.getElementById('mp-drop').classList.remove('open');
+        document.getElementById('mp-prev-img').src='/cineclub/'+el.dataset.poster;
+        document.getElementById('mp-prev-t').textContent=el.dataset.title;
+        document.getElementById('mp-prev').classList.add('show');
+        document.querySelectorAll('.mp-item').forEach(i=>i.classList.remove('selected'));
+        el.classList.add('selected');
+        const btn=document.getElementById('mp-submit');
+        btn.disabled=false;btn.style.opacity='1';btn.style.cursor='pointer';
+    }
+    function clearMp(){
+        document.getElementById('sel-mid').value='';
+        document.getElementById('mp-q').value='';
+        document.getElementById('mp-prev').classList.remove('show');
+        document.querySelectorAll('.mp-item').forEach(i=>i.classList.remove('selected'));
+        const btn=document.getElementById('mp-submit');
+        btn.disabled=true;btn.style.opacity='0.5';btn.style.cursor='not-allowed';
+    }
+    document.addEventListener('click',e=>{if(!e.target.closest('.mp-wrap'))document.getElementById('mp-drop')?.classList.remove('open');});
 </script>
 
 <?php if (!empty($errors)): ?>
