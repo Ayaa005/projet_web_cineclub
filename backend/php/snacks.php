@@ -78,7 +78,7 @@ $nu = count(array_filter($snacks, fn($s) => $s['status']==='unassigned'));
     <div class="empty-state">
         <div class="empty-icon">🍿</div>
         <h3>No session yet</h3>
-        <p>Tu dois d'abord créer une session depuis la page Planning pour pouvoir ajouter des snacks.</p>
+        <p>You have to create a session first to be able to add new snacks!.</p>
         <?php if ($isOrg): ?>
         <a href="./planning.php" class="btn-red" style="margin-top:14px">
             📅 Go to Planning
@@ -91,13 +91,13 @@ $nu = count(array_filter($snacks, fn($s) => $s['status']==='unassigned'));
         <div class="empty-icon">🍿</div>
         <h3>No snacks yet</h3>
         <?php if ($isOrg): ?>
-        <p>Ajoute les snacks pour la prochaine soirée !</p>
+        <p>Add snacks for the next evening !</p>
         <button class="btn-red" style="margin-top:14px"
                 onclick="document.getElementById('m-snack').style.display='flex'">
             + Add First Snack
         </button>
         <?php else: ?>
-        <p>L'organisateur n'a pas encore ajouté de snacks.</p>
+        <p>No snacks added by organizer.</p>
         <?php endif; ?>
     </div>
 
