@@ -128,7 +128,7 @@ if($cm<1){$cm=12;$cy--;} if($cm>12){$cm=1;$cy++;}
     <?php if(!empty($mlist)):?>
     <form method="POST" id="plan-form">
         <input type="hidden" name="movie_id" id="sel-mid" value="">
-        <div class="form-field"><label>Film * (depuis Voting)</label>
+        <div class="form-field"><label>Films * (from Voting)</label>
         <div class="mp-wrap">
             <input type="text" id="mp-q" class="mp-input" placeholder="search for suggested movie..." oninput="filterMp(this.value)" onfocus="document.getElementById('mp-drop').classList.add('open')" autocomplete="off">
             <div class="movie-picker-drop" id="mp-drop">
@@ -144,9 +144,9 @@ if($cm<1){$cm=12;$cy--;} if($cm>12){$cm=1;$cy++;}
         </div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
             <div class="form-field"><label>Date *</label><input type="date" name="session_date" id="plan-date" min="<?=date('Y-m-d')?>" required></div>
-            <div class="form-field"><label>Heure *</label><input type="time" name="session_time" id="plan-time" value="20:00" required></div>
+            <div class="form-field"><label>Time *</label><input type="time" name="session_time" id="plan-time" value="20:00" required></div>
         </div>
-        <div class="form-field"><label>Lieu</label><input type="text" name="location" id="plan-loc" placeholder="Ex: at Alice, cinema..."></div>
+        <div class="form-field"><label>Place</label><input type="text" name="location" id="plan-loc" placeholder="Ex: at Alice, cinema..."></div>
         <p style="font-size:11px;color:var(--text3);margin-top:8px">ℹ The session will automatically move to Archives once the date and time have passed.</p>
         <div class="modal-btns">
             <button type="submit" class="btn-red" id="mp-submit" disabled style="opacity:.5;cursor:not-allowed">Add Session</button>
